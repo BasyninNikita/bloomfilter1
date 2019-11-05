@@ -67,6 +67,8 @@ def get_command():
 #     return (i + 1)
 
 def primes(n):
+    if n == 1:
+        return [2]
     a = list(range(n + 1))
     a[1] = 0
     lst = []
