@@ -1,7 +1,7 @@
 import math
 import sys
 
-M = (1 << 31) - 1  # M-31th  Mersen's number
+M = (1 << 31) - 1  # M-31th Mersen's number
 
 
 def get_command():
