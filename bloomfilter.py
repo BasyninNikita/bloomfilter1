@@ -37,37 +37,47 @@ def get_command():
             if line.replace("print", '') != '\n' or ss == False:
                 print('error')
             else:
-                print(bf.print(), end='')
+                print(bf.print())  # , end='')
         elif line == '\n':
             continue
         else:
             print('error')
 
 
-def bit_sieve(n):
-    if n < 2:
-        return []
-    bits = [1] * n
-    sqrt_n = int(math.sqrt(n)) + 1
-    for i in range(2, sqrt_n):
-        if bits[i - 2]:
-            for j in range(i + i, n + 1, i):
-                bits[j - 2] = 0
-    return bits
+# def bit_sieve(n):
+#     if n < 2:
+#         return []
+#     bits = [1] * n
+#     sqrt_n = int(math.sqrt(n)) + 1
+#     for i in range(2, sqrt_n):
+#         if bits[i - 2]:
+#             for j in range(i + i, n + 1, i):
+#                 bits[j - 2] = 0
+#     return bits
+#
+#
+# def prime(k):
+#     if k == 1:
+#         return 2
+#     sieve = bit_sieve(int(1.5 * k * math.log(k)) + 1)
+#     i = 0
+#     while k:
+#         k -= sieve[i]
+#         i += 1
+#     return (i + 1)
 
-
-def prime(k):
-    if k == 1:
-        return 2
-    sieve = bit_sieve(int(1.5 * k * math.log(k)) + 1)
-    i = 0
-    while k:
-        k -= sieve[i]
+def primes(n):
+    a = list(range(n + 1))
+    a[1] = 0
+    lst = []
+    i = 2
+    while i <= n:
+        if a[i] != 0:
+            lst.append(a[i])
+            for j in range(i, n + 1, i):
+                a[j] = 0
         i += 1
-    return (i + 1)
-
-
-
+    return lst
 
 
 class Bits:
@@ -77,22 +87,14 @@ class Bits:
         self.num_hashes = num_hashes
         self.bits = 0
 
-    # def add(self):
-    #     for i in range(self.num_hashes):
-    #         self.bits = self.bits | (1 << hash_search(key, i, self.m))
     def add(self, key_hash):
         self.bits = self.bits | (1 << key_hash)
 
     def print(self):
-        return (bin(self.bits)[:1:-1]) + '0' * (self.m - len(bin(self.bits)[2:])) + '\n'
+        return (bin(self.bits)[:1:-1]) + '0' * (self.m - len(bin(self.bits)[2:]))  # + '\n'
 
     def search(self, key_hash):
         return self.bits & (1 << key_hash) != 0
-    # def search(self, key):
-    #     for i in range(self.num_hashes):
-    #         if (self.bits & (1 << hash_search(key, i, self.m))) == 0:
-    #             return False
-    #     return True
 
 
 class BloomFilter:
@@ -101,7 +103,7 @@ class BloomFilter:
         self.num_hashes = round(-(math.log2(P)))
         self.m = round(- (n * math.log2(P)) / math.log(2))
         self.bits = Bits(self.m, self.num_hashes)
-        self.primes = [prime(i+1) for i in range(self.num_hashes)]
+        self.primes = primes(int(1.5 * self.num_hashes * math.log(self.num_hashes)) + 1)
 
     def size(self):
         return self.m
@@ -116,8 +118,6 @@ class BloomFilter:
         for i in range(self.num_hashes):
             self.bits.add(self.hash_search(key, i, self.m))
         return
-    # def add(self, key):
-    #     return self.bits.add(key)
 
     def search(self, key):
         for i in range(self.num_hashes):
@@ -125,9 +125,6 @@ class BloomFilter:
             if not succ:
                 return False
         return True
-
-    # def search(self, key):
-    #     return self.bits.search(key)
 
     def print(self):
         return self.bits.print()
